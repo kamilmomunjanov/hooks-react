@@ -1,28 +1,39 @@
-import React, {useState, useEffect, useRef, useMemo, useCallback} from "react";
-import ItemList from "./ItemList";
+import React, {useState, useContext, useEffect, useRef, useMemo, useCallback} from "react";
+import {AlertProvider, useAlert} from "./AlertContext";
 
 
-function App() {
-    const [count, setCount] = useState(1)
-    const [colored, setColored] = useState(false)
+const Main = () => {
 
-
-    const styles = {
-        color: colored ? "dark" : "black"
-    }
-
-    const generateItemsFromApi = useCallback(() => {
-            return new Array(count).fill("").map((_, index) => `Элемент ${index + 1}`)
-    }, [count])
-
-
+    const {toggle} = useAlert()
     return (
         <>
-            <h1>Количество элементов: {count}</h1>
-            <button onClick={() => setCount(prevState => prevState + 1)}>Add</button>
-            <button onClick={() => setColored(prevState => !prevState)}>Change</button>
-            <ItemList getItems={generateItemsFromApi}/>
+            <h1>Hello context</h1>
+            <button onClick={toggle}>Show alert</button>
         </>
+    )
+}
+
+const Alert = () => {
+    const alert = useAlert()
+
+    if (!alert.visible) return null
+
+    return (
+        <div onClick={alert.toggle}>
+            This is very need message
+        </div>
+    )
+}
+
+function App() {
+
+    return (
+        <AlertProvider>
+            <div>
+                <Alert/>
+                <Main toggle={() => {}}/>
+            </div>
+        </AlertProvider>
     );
 }
 
