@@ -4,11 +4,11 @@ import {AlertProvider, useAlert} from "./AlertContext";
 
 const Main = () => {
 
-    const {toggle} = useAlert()
+    const {show} = useAlert()
     return (
         <>
             <h1>Hello context</h1>
-            <button onClick={toggle}>Show alert</button>
+            <button onClick={() => show("This is text from Main.js")}>Show alert</button>
         </>
     )
 }
@@ -19,8 +19,8 @@ const Alert = () => {
     if (!alert.visible) return null
 
     return (
-        <div onClick={alert.toggle}>
-            This is very need message
+        <div onClick={alert.hide}>
+            {alert.text}
         </div>
     )
 }
@@ -31,7 +31,7 @@ function App() {
         <AlertProvider>
             <div>
                 <Alert/>
-                <Main toggle={() => {}}/>
+                <Main/>
             </div>
         </AlertProvider>
     );
