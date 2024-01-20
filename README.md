@@ -1,70 +1,236 @@
-# Getting Started with Create React App
+# React Hooks
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
++ ## useState.
 
-## Available Scripts
+     `useState` - это один из хуков (hooks) в React, который предоставляет\
+возможность добавления состояния в функциональные компоненты. До появления\
+хуков в React 16.8, состояние могло быть использовано только в классовых компонентах. useState позволяет функциональным компонентам иметь свое собственное состояние.
 
-In the project directory, you can run:
 
-### `yarn start`
++ ## useEffect. Методы жизненного цикла эффекта.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Методы жизненного цикла функционального компонента позволяют нам выполнять определённые действия в разные моменты жизни компонента, такие как его создание, обновление и удаление.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `yarn test`
++ ## useRef.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+`useRef` - это хук в React, который предоставляет объект ref, который может быть использован для доступа к DOM-элементу или для хранения мутированного значения между рендерами без вызова перерисовки компонента. 
+`useRef` также похож на `useState`. Он также создаёт состояние.\
+const renderCount = useRef(1)\
+`useRef` не вызывает рендер компонента. useRef представляет собой хук, предназначенный для хранения мутабельного значения, которое не вызывает повторный рендер компонента при его изменении.
 
-### `yarn build`
+В вашем примере:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+`const renderCount = useRef(1);`\
+useRef(1) инициализирует renderCount значением 1. Важно отметить, что изменение значения current внутри useRef не вызывает повторный рендер компонента.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Однако, в вашем коде есть useEffect:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+`useEffect(() => {
+    renderCount.current++;
+})`\
+\
+Этот useEffect вызывается после каждого рендера компонента, и внутри него происходит увеличение значения current в объекте renderCount. Это увеличение current не вызывает повторный рендер, так как useRef не триггерит рендер при изменении значения.
 
-### `yarn eject`
+Таким образом, useRef не является механизмом, который сам по себе вызывает рендер компонента. Его основное предназначение - предоставить мутабельную переменную, которую вы можете использовать без изменения состояния и без вызова повторного рендера.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Для useRef есть еще одно использование, когда мы хотим получать значение предыдущего значения стейта. useRef может получать предыдущее значение, а useState нет.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
++ ## useMemo.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
+`useMemo` - это хук в React, который используется для мемоизации результатов выполнения функций или для кеширования значений, чтобы избежать повторных вычислений во время повторных рендеров компонента.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Основная цель useMemo - оптимизировать производительность, избегая лишних вычислений в ситуациях, когда результат не изменяется между рендерами. Он принимает функцию и массив зависимостей, и возвращает мемоизированное значение этой функции.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Решение о том, стоит ли использовать useMemo для мемоизации значения, зависит от конкретного контекста и требований вашего приложения. Вот несколько рекомендаций, которые могут помочь в принятии решения:
 
-### Code Splitting
+Сложные вычисления:
+Используйте useMemo, если вычисление значения требует затратных операций, и вы хотите избежать их повторного выполнения при каждом рендере компонента. Это может включать в себя сложные вычисления, вызовы API, фильтрацию, сортировку\ или другие ресурсоемкие операции.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+`const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);`
+Избегание избыточных вычислений:\
+Используйте useMemo, если вы хотите избежать повторных вычислений в случае, когда результат не изменяется между рендерами.
 
-### Analyzing the Bundle Size
+const memoizedArray = useMemo(() => generateArray(), []); // Без зависимостей\
+Зависимости от состояния или пропсов:
+Используйте useMemo, когда значение зависит от состояния или пропсов компонента, и вам нужно мемоизировать результат только при изменении конкретных зависимостей.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+`const memoizedResult = useMemo(() => computeResult(propA, propB, stateC), [propA, propB, stateC]);\`
+Производительность:\
+Используйте useMemo, если вы столкнулись с проблемами производительности и обнаружили, что некоторые вычисления выполняются слишком часто, ведущи к избыточному рендерингу.
 
-### Making a Progressive Web App
+`const memoizedValue = useMemo(() => computeValue(), [dependency]);`\
+Необязательность:\
+Не всегда стоит мемоизировать каждое значение. Иногда это может привести к нежелательному усложнению кода. Используйте useMemo тогда, когда это действительно необходимо и принесет выигрыш в производительности.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Помните, что неправильное использование useMemo может привести к избыточному коду и усложнению логики. Поэтому принимайте решение о его применении осознанно, основываясь на конкретных потребностях вашего приложения\ и требованиях производительности.
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
++ ## useCallback.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-### `yarn build` fails to minify
+`useCallback` - это хук в React, который используется для мемоизации функций, чтобы избежать их пересоздания при каждом рендере компонента. Основная цель useCallback - оптимизировать производительность компонентов, уменьшая ненужные\ перерисовки.
+Основные применения `useCallback`:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Передача функций в дочерние компоненты:
+Используйте useCallback, чтобы мемоизировать функции, которые передаются в дочерние компоненты, чтобы избежать ненужных перерисовок этих компонентов.
+
+Оптимизация обработчиков событий:
+Используйте useCallback, чтобы избежать пересоздания функций обработчиков событий, которые передаются в атрибуты событий.
+
+Оптимизация колбэков в зависимости от изменения пропсов:
+Если вы хотите, чтобы колбэк зависел от изменений в пропсах, передайте эти пропсы в массив зависимостей useCallback.
+
+Важно использовать `useCallback` осознанно, так как его неправильное использование может привести к усложнению кода. Он полезен, когда определенные функции должны сохраняться между рендерами, но не всегда необходим в каждой ситуации.
+
+useCallback и useMemo в основном решают одну и ту же задачу – мемоизацию значений, чтобы избежать лишних вычислений или пересоздания объектов. Однако они применяются в разных контекстах и для разных типов значений.
+
+Вот основные различия между `useCallback` и `useMemo`:
+
+Тип значения, которое они мемоизируют:
+
+`useCallback` используется для мемоизации функций.
+useMemo используется для мемоизации любых значений, не обязательно функций.\
+Когда использовать:
+
+Используйте useCallback, когда необходимо мемоизировать функции, особенно если эти функции передаются в дочерние компоненты или используются в качестве обработчиков событий. Это помогает предотвратить ненужные ререндеры дочерних компонентов.\
+Используйте useMemo, когда необходимо мемоизировать любые другие значения, такие как объекты, массивы, строки и т. д., особенно если эти значения получаются в результате дорогостоящих вычислений.
+Синтаксис:
+
+`useCallback` принимает функцию и массив зависимостей, и возвращает мемоизированную версию этой функции. Массив зависимостей указывает, при каких изменениях зависимостей следует пересоздать функцию.\
+\
+`useMemo` также принимает функцию и массив зависимостей, но возвращает мемоизированное значение этой функции, а не функцию. Таким образом, useMemo используется для мемоизации конкретного значения, в то время как useCallback – для мемоизации функции.\
+В заключение, выбор между useCallback и useMemo зависит от того, что вы хотите мемоизировать: функцию (используйте useCallback) или любое другое значение (используйте useMemo).
++ ## useContext.
+
+`useContext` - это хук в React, который предоставляет доступ к значению контекста, определенному с помощью компонента React.createContext. Контекст позволяет передавать данные через дерево компонентов без явной передачи пропсов\ от родителя к потомкам на каждом уровне.\
+
+
+
++ ## useReducer.
+
+`useReducer` - это хук в React, предназначенный для управления состоянием компонентов с использованием паттерна "редюсер". Этот хук предоставляет более\ сложный способ управления состоянием по сравнению с useState, особенно когда\ состояние комплексное и требует более сложных операций обновления.
+
+Основные компоненты useReducer:
+
+Редюсер (Reducer):
+
+Редюсер - это функция, которая принимает текущее состояние и действие, и возвращает новое состояние.\
+Функция редюсера имеет следующий формат: (state, action) => newState.
+Редюсер должен быть чистой функцией, то есть его результат должен зависеть только от входных параметров.\
+Инициализационное состояние:
+
+Второй аргумент `useReducer` - это начальное состояние, которое будет использовано, если не предоставлено иное.\
+Начальное состояние может быть любым типом данных: объектом, массивом, числом, строкой и т.д.\
+Пример использования useReducer:
+
+`import React, { useReducer } from 'react';`
+
+ Редюсер\
+`const reducer = (state, action) => {`\
+  `switch (action.type) {`\
+    `case 'INCREMENT':`\
+      `return { count: state.count + 1 };`\
+    `case 'DECREMENT':`\
+      `return { count: state.count - 1 };`\
+    `default:`\
+      `return state;`\
+  `}`\
+`};`
+
+`function Counter() {`\
+   Использование useReducer\
+  `const [state, dispatch] = useReducer(reducer, { count: 0 });`
+
+  `return (`\
+    `<div>`\
+      `<p>Count: {state.count}</p>`\
+      `<button onClick={() => dispatch({ type: 'INCREMENT' })}>Increment</button>`\
+      `<button onClick={() => dispatch({ type: 'DECREMENT' })}>Decrement</button>`\
+    `</div>`\
+  `);`\
+`}`\
+\
+В приведенном выше примере создается компонент Counter, который использует useReducer. Редюсер увеличивает или уменьшает count в зависимости от типа действия (INCREMENT или DECREMENT). dispatch используется для отправки\ действий редюсеру. useReducer возвращает текущее состояние и функцию dispatch.
+
+`useReducer` полезен, когда у вас сложное состояние, которое требует более сложных операций обновления, или когда логика обновления состояния зависит от предыдущего состояния.
+
+`dispatch` - это функция, предоставляемая useReducer в React. Она используется для отправки действий (actions) редюсеру, что в свою очередь приводит к изменению состояния компонента.
+
+Когда вы используете useReducer, вы получаете из хука массив, где первый элемент представляет текущее состояние, а второй элемент - функцию dispatch. Например:
+
+`const [state, dispatch] = useReducer(reducer, initialState);`
+Здесь:
+
+state представляет текущее состояние компонента.\
+dispatch - это функция, которую вы вызываете, чтобы отправить действие редюсеру.\
+Пример использования dispatch:
+
+ Определение редюсера\
+`const reducer = (state, action) => {`\
+  `switch (action.type) {`\
+    `case 'INCREMENT':`\
+      `return { count: state.count + 1 };`\
+    `default`\
+      `return state;`\
+  `}`\
+`};`
+
+// Использование useReducer\
+`const [state, dispatch] = useReducer(reducer, { count: 0 });`
+
+// Отправка действия\
+dispatch({ type: 'INCREMENT' });\
+В этом примере вызов dispatch({ type: 'INCREMENT' }) отправляет действие редюсеру. Ваш редюсер затем обрабатывает это действие и возвращает новое состояние. Когда состояние изменяется, React перерисовывает компонент с новым состоянием.
+
+Важно отметить, что dispatch - это асинхронная операция, и вызов dispatch не гарантирует немедленного изменения состояния и перерисовки компонента. React может решить задержать перерисовку для оптимизации производительности.
+
+В контексте управления состоянием в React и паттерна "редюсер" (reducer), action представляет собой объект, который описывает, какое изменение следует произвести в состоянии приложения. В контексте использования useReducer хук, action передается в редюсер (reducer), который затем использует этот объект для определения, как изменить текущее состояние.
+
+Объект action обычно содержит как минимум поле type, которое указывает, какое конкретное действие следует выполнить. Дополнительные поля могут содержать данные, необходимые для выполнения этого действия.
+
+Пример объекта action:
+
+`const incrementAction =`
+\
+  `type: 'INCREMENT',`\
+  `amount: 1`\
+`};`
+
+`const decrementAction = {
+  type: 'DECREMENT',
+  amount: 1
+};`
+
+В этом примере type - это строковое значение, указывающее на тип действия\ (увеличение или уменьшение). Дополнительное поле amount содержит значение, на\ которое следует изменить состояние.
+
+Пример использования action с useReducer:
+
+`const initialState = { count: 0 };`
+
+`const reducer = (state, action) => {`\
+  `switch (action.type) {`\
+    `case 'INCREMENT':`\
+      `return { count: state.count + action.amount };`\
+    `case 'DECREMENT':`\
+      `return { count: state.count - action.amount };`\
+    `default:`\
+      `return state;`\
+  `}`\
+`};`
+
+`const [state, dispatch] = useReducer(reducer, initialState);`
+
+ Использование action с dispatch\
+dispatch(incrementAction);\
+dispatch(decrementAction);\
+В этом примере dispatch передает объект action в редюсер, который затем использует его для определения, как изменить текущее состояние.
+
+
+
+
+
+
